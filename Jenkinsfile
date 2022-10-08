@@ -14,5 +14,21 @@ node {
       junit 'test-reports/results.xml'
     }
   }
-  
+
+  stage('Manual Approval') {
+    input 'Lanjutkan ke tahap Deploy?'
+  }
+
+  stage('Deploy') {
+    try {
+        sh 'docker run -v "$(pwd)/sources:/src/" cdrx/pyinstaller-linux:python2 "pyinstaller --onefile /src/add2vals.py"'
+        archiveArtifacts 'sources/dist/add2vals'
+
+    } catch(Exception e) {
+        echo e.toString()
+
+    } finally {
+        sleep 60
+    }
+  }
 }
